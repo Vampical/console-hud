@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
 const { version } = require('./module.json');
-const expectedHash = '34150ac8564d5442b6b0f7f48412de91877bf2cb305b905c7a2c322360dec6ba';
+const expectedHash = '3b1725f6351e8437c2acc666d98ce388e50591f7c8d64b48dbe8ad8c1cb2aa64';
 const resource = 'client/S1UI_CharacterWindow.gpk';
 
 exports.ClientMod = class ConsoleHUDClient {

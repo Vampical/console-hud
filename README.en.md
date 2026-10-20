@@ -4,11 +4,13 @@
 
 A TERA Toolbox mod that replaces the character HUD with a console-style layout: circular laurels, a class icon, HP, MP, gear score and class resource bars.
 
-**Version: 0.40. Supported client: TERA 100.02, x64.** Other client patches have not been verified.
+**Version: 0.43. Supported client: TERA 100.02, x64.** Other client patches have not been verified.
 
 ## Features
 
 - Compact and expanded character HUD layouts.
+- The + button after Adventure Coins opens the native TERA Store.
+- Adventure Coins to the left of the party crown: native icon, current/maximum balance, event infinity mode and native tooltip.
 - Classic circular Lv65-era laurels and five ranks of console-style laurels created by us.
 - Switch styles while staying on your character, including the native 100.02 HUD and laurels.
 - HP and MP gradients, click-to-toggle percentages, shields and native HP states.
