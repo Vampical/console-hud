@@ -1,7 +1,7 @@
 {
   "name": "console-hud",
   "author": "Vampic",
-  "version": "0.43",
+  "version": "0.54",
   "description": "Console HUD using Toolbox native GPK loading. No mapper file replacement. Built for PC 100.02.",
   "keywords": [
     "client"
@@ -10,7 +10,7 @@
     "guiName": "Console HUD",
     "cliName": "ConsoleHUD",
     "reloadable": false,
-    "settingsVersion": 2,
+    "settingsVersion": 3,
     "settingsFile": "config.json",
     "settingsMigrator": "settings_migrator.js"
   },

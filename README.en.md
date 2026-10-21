@@ -4,16 +4,17 @@
 
 A TERA Toolbox mod that replaces the character HUD with a console-style layout: circular laurels, a class icon, HP, MP, gear score and class resource bars.
 
-**Version: 0.43. Supported client: TERA 100.02, x64.** Other client patches have not been verified.
+**Version: 0.54. Supported client: TERA 100.02, x64.** Other client patches have not been verified.
 
 ## Features
 
 - Compact and expanded character HUD layouts.
+- Party design 4 with names inside HP, a separate MP bar, round laurels, individual dragging, and connectors behind the UI.
 - The + button after Adventure Coins opens the native TERA Store.
 - Adventure Coins to the left of the party crown: native icon, current/maximum balance, event infinity mode and native tooltip.
 - Classic circular Lv65-era laurels and five ranks of console-style laurels created by us.
 - Switch styles while staying on your character, including the native 100.02 HUD and laurels.
-- HP and MP gradients, click-to-toggle percentages, shields and native HP states.
+- HP and MP gradients and click-to-toggle percentages. The character HUD supports shields; the party HUD does not calculate shields.
 - Warrior and sorcerer stacks, class resources, and a gear-score icon with decimal values.
 - Animated energy flow for valkyrie, gunner and brawler. Valkyrie's empty `0 / 0` bar remains visible.
 
@@ -40,7 +41,10 @@ The game location is detected through Toolbox. No separate installer or manual m
          ├─ module.json
          ├─ index.js
          ├─ client/
-         │  └─ S1UI_CharacterWindow.gpk
+         │  ├─ S1UI_CharacterWindow.gpk
+         │  ├─ S1UI_PartyWindow.gpk
+         │  ├─ S1UI_PartyAbnormalitySetting.gpk
+         │  └─ S1UI_InteractionMenu.gpk
          └─ definitions/
    ```
 
@@ -72,6 +76,34 @@ Enter commands in the **Toolbox channel**. `consolehud` is an alias for `chud`, 
 **Classic Lv65 laurels are selected on a fresh installation.** `classic` and `console` use our HUD with different laurels. `default` restores the native 100.02 Character Window: HP, MP, class resources, laurels, gear score and other elements. All three modes switch without leaving your character or disabling the module. `toggle` alternates `classic` and `console`; from `default`, it returns to `classic`.
 
 The only addition to the native `default` layout is clicking the central panel to switch between expanded and vertical views and save the selection. Dragging the panel does not toggle its layout.
+
+## Party UI
+
+Party spacing and connectors account for the in-game UI scale. Original colored class icon textures are embedded in the party package.
+
+Custom party styles are 25% smaller than the initial game builds, with tighter effect spacing. The in-game UI scale still applies.
+
+Custom party styles align the class icon and wreath center with the MP bar center.
+
+Custom party styles now include a separate ST bar below MP for warriors, lancers, archers, reapers, gunners, brawlers, ninjas, and valkyries. Fill comes from server party-resource updates. ST is a thin bar without a label or numbers; a zero maximum leaves it visible and empty. Effects below move down with the additional bar. Default retains the native 100.02 party without this extra ST bar.
+
+All 13 original class icons are centered from their visible bitmap bounds, separately in the party and character HUD. Colors are unchanged.
+
+
+`classic`, `console`, and `default` control both HUDs. Classic and console use party design 4 with the original class icon colors, names inside HP, a separate MP bar, and connectors behind the UI. Default restores the native 100.02 party window.
+
+Click a party HP or MP bar to switch that bar type between percentage and current/maximum values. Each preference applies to all party members and is saved separately in `config.json` (`partyHpPercent` and `partyMpPercent`, both `false` by default).
+
+Effects default to one row beneath MP, starting at the rectangular part of the HP bar. Open the native party gear menu and its effect settings, enable **«Показывать эффекты справа»** (Show effects on the right), and press **OK** for three effects vertically with unlimited columns to the right. This saves `partyEffectsRight` (`false` by default). Native filters, group popups, timers, and tooltips are retained. The added checkbox is hidden in default style.
+
+The combat indicator is placed after HP. The complete dice field, including its result and item icon, is placed after MP. Right-side effects move past the current visible status fields and settings button. Bottom-row effects keep their alignment.
+
+Drag each member by its laurel. Connectors follow actual columns, so separating one member does not remove unrelated links. The game continues to save member positions.
+
+Right-click a party member and choose **«Осмотреть» (Inspect)** to open the native equipment inspection window. This action is available in all three styles.
+
+Column snapping only runs while dragging the selected member. It never moves other members or repositions the party on theme or HP/MP changes. The custom party frame callback is removed when idle. Connectors update on placement events; dice bounds update only while the widget is visible. Character animations render at most 30 times per second; unchanged fills and text are cached.
+
 
 ## Settings
 
@@ -119,3 +151,5 @@ In **Issues**, include the client patch, Toolbox version, `chud status` output, 
 Module code and documentation: [MIT](LICENSE), by Vampic.
 
 Game resources inside the GPK are excluded from MIT. See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) for scope and ownership notices. This is an unofficial TERA modification.
+
+Party resource updates contain only changed current/max values for affected members. A complete resource snapshot is sent on initial loading or UI restoration. Removing a member clears only that member’s resource.

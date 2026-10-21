@@ -18,6 +18,9 @@ module.exports = function migrate(fromVersion, toVersion, settings) {
     return {
         enabled: settings?.enabled !== false,
         laurelStyle: settings?.laurelStyle === 'default' ? 'default' :
-            settings?.laurelStyle === 'console' || settings?.laurelStyle === 'round' ? 'console' : 'classic'
+            settings?.laurelStyle === 'console' || settings?.laurelStyle === 'round' ? 'console' : 'classic',
+        partyHpPercent: settings?.partyHpPercent === true,
+        partyMpPercent: settings?.partyMpPercent === true,
+        partyEffectsRight: settings?.partyEffectsRight === true
     };
 };

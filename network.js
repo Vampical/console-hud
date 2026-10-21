@@ -2,6 +2,8 @@
 const path = require('path');
 const codec = require('./settings-codec');
 const { version } = require('./module.json');
+const PartyResources = require('./party-resources');
+const PartyInspect = require('./party-inspect');
 
 // ACCOUNT UI data belongs to the running client, not its current character's
 // network connection. Weak keys release it when the native client disconnects.
@@ -42,6 +44,7 @@ module.exports = class ConsoleHUDNetwork {
                     this.rememberSettings(scope);
                     if (mod.settings.enabled === false) return;
                     event.data = this.request(this.mode, incoming);
+                    if (this.partyResources) this.partyResources.resync();
                     return true;
                 } catch (error) {
                     // A controller packet without UI must not erase the
@@ -51,8 +54,11 @@ module.exports = class ConsoleHUDNetwork {
             });
             this.hookSettings('C_SAVE_CLIENT_' + scope + '_SETTING', event => {
                 this.received[scope].save++;
-                if (scope === 'USER' && this.inLobby) return;
+                const cleaned = codec.stripPartyResources(event.data);
+                if (cleaned) event.data = cleaned;
+                if (scope === 'USER' && this.inLobby) return cleaned ? true : undefined;
                 try {
+                    this.capturePartyPreferences(event.data);
                     this.snapshots[scope] = codec.mergeSettings(this.snapshots[scope], event.data);
                     this.rememberSettings(scope);
                     if (!this.settings) {
@@ -72,9 +78,10 @@ module.exports = class ConsoleHUDNetwork {
                         mod.log('HUD theme acknowledged by GFx: ' + this.styleName(request.mode));
                     }
                 } catch (error) { mod.error('HUD settings: ' + error.message); }
+                return cleaned ? true : undefined;
             });
         }
-        this.commandHandler = arg => this.command(arg);
+        this.commandHandler = (...args) => this.command(...args);
         this.registerCommands();
         mod.hook('S_RETURN_TO_LOBBY', 'event', () => this.leaveCharacter());
         mod.hook('S_LOGIN_ACCOUNT_INFO', 3, { order: 100000 }, event => {
@@ -95,6 +102,8 @@ module.exports = class ConsoleHUDNetwork {
         mod.hook('S_SPAWN_ME', 'event', { order: 100000 }, () => {
             this.registerCommands(); this.scheduleRestore();
         });
+        this.partyResources = new PartyResources(this);
+        this.partyInspect = new PartyInspect(this);
         mod.log('Console HUD network v' + version + ' ready: consolehud / chud; settings hooks ' + this.activeHooks.length + '/4.');
     }
     registerCommands() {
@@ -104,6 +113,22 @@ module.exports = class ConsoleHUDNetwork {
             this.mod.command.add(name, this.commandHandler);
         }
         this.commandsRegistered = true;
+    }
+    partyPreferences() {
+        return { CHPH: this.mod.settings.partyHpPercent === true ? 1 : 0,
+            CHPM: this.mod.settings.partyMpPercent === true ? 1 : 0,
+            CHBR: this.mod.settings.partyEffectsRight === true ? 1 : 0 };
+    }
+    capturePartyPreferences(data) {
+        let values;
+        try { values = codec.controlValues(data); } catch (_) { return; }
+        let changed = false;
+        for (const [key, setting] of [['CHPH', 'partyHpPercent'], ['CHPM', 'partyMpPercent'], ['CHBR', 'partyEffectsRight']]) {
+            if (![0, 1].includes(values[key])) continue;
+            const value = values[key] === 1;
+            if (this.mod.settings[setting] !== value) { this.mod.settings[setting] = value; changed = true; }
+        }
+        if (changed) this.mod.saveSettings();
     }
     preferredMode() { return this.mod.settings.laurelStyle === 'default' ? 2 : ['console', 'round'].includes(this.mod.settings.laurelStyle) ? 0 : 1; }
     styleName(mode = this.mode) { return ['console', 'classic', 'default'][mode]; }
@@ -171,7 +196,7 @@ module.exports = class ConsoleHUDNetwork {
     }
     request(mode, settings = this.settings) {
         this.session.nonce = this.session.nonce >= 2147483647 ? 1 : this.session.nonce + 1;
-        const nonce = this.session.nonce, data = codec.patchTheme(settings, mode, nonce);
+        const nonce = this.session.nonce, data = codec.patchTheme(settings, mode, nonce, this.partyPreferences());
         this.clearPending(); this.lastRequest = { mode, nonce };
         this.pending = { mode, nonce, timer: this.mod.setTimeout(() => { this.pending = null; }, 3000) };
         return data;
@@ -183,12 +208,20 @@ module.exports = class ConsoleHUDNetwork {
             if (this.mod.send('S_LOAD_CLIENT_' + this.scope + '_SETTING', 1, { data }) === false)
                 throw Error('Клиент не получил пакет настроек');
         } finally { this.sendingTheme = false; }
+        if (this.partyResources) this.partyResources.schedule();
     }
     saveMode(mode) {
         this.mode = mode; this.mod.settings.laurelStyle = this.styleName(mode); this.mod.saveSettings();
     }
-    command(argument) {
+    command(argument, key, value) {
         const arg = String(argument || 'status').toLowerCase();
+        if (arg === '_party') {
+            const setting = { CHPH: 'partyHpPercent', CHPM: 'partyMpPercent' }[key];
+            if (setting && ['0', '1'].includes(value) && this.mod.settings[setting] !== (value === '1')) {
+                this.mod.settings[setting] = value === '1'; this.mod.saveSettings();
+            }
+            return;
+        }
         if (arg === 'status') {
             this.mod.command.message('v' + version + '. Мод ' + (this.mod.settings.enabled === false ? 'выключен' : 'включён') + '. Стиль: ' + this.styleLabel() + '. Ответ панели: ' + (this.lastRequest && this.confirmedNonce === this.lastRequest.nonce ? 'получен' : 'ещё не получен') + '. Хуки: ' + this.activeHooks.length + '/4; настройки: ' + (this.settings ? this.scope + (this.fromClientCache ? ' (сессия клиента)' : '') : 'ожидаются') + '. Пакеты LOAD/SAVE: USER ' + this.received.USER.load + '/' + this.received.USER.save + ', ACCOUNT ' + this.received.ACCOUNT.load + '/' + this.received.ACCOUNT.save + '.'); return;
         }
@@ -219,6 +252,8 @@ module.exports = class ConsoleHUDNetwork {
         } catch (error) { this.clearPending(); this.mod.command.message('Переключение не выполнено: ' + error.message); }
     }
     destructor() {
+        this.partyInspect.destructor();
+        this.partyResources.destructor();
         this.cancelRestore(); this.clearPending();
         for (const name of ['consolehud', 'chud']) this.mod.command.remove(name);
     }

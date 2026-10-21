@@ -1,19 +1,24 @@
 {
 	"files": {
-		"client/S1UI_CharacterWindow.gpk": "3b1725f6351e8437c2acc666d98ce388e50591f7c8d64b48dbe8ad8c1cb2aa64",
+		"client/S1UI_CharacterWindow.gpk": "5a8326a30d28fab5ab00ac93888eef5eccf37ede80b6088941f653cb1882abe6",
 		"definitions/C_SAVE_CLIENT_ACCOUNT_SETTING.1.def": "3159e57b2c6623d6e14370adeb5a069f6076bb89465da79d791c8c40c20c6250",
 		"definitions/C_SAVE_CLIENT_USER_SETTING.1.def": "3159e57b2c6623d6e14370adeb5a069f6076bb89465da79d791c8c40c20c6250",
 		"definitions/S_LOAD_CLIENT_ACCOUNT_SETTING.1.def": "3159e57b2c6623d6e14370adeb5a069f6076bb89465da79d791c8c40c20c6250",
 		"definitions/S_LOAD_CLIENT_USER_SETTING.1.def": "3159e57b2c6623d6e14370adeb5a069f6076bb89465da79d791c8c40c20c6250",
-		"index.js": "59b7ad9fa7ad6bcfa625bc85f116bbe8227b87a5ae03278d9efbef2c818fc9b0",
-		"module.json": "bf9785fe4dfc4b6820bdcbddbba9c0639d4b7d74d7c0ac3bd186b79d01db2fe4",
-		"network.js": "81775883904f9e752469a1a3e2316786a05191f6c6aae47402ef7c7edc82fbb6",
-		"settings-codec.js": "e28d04c796cebfb74b302830b8a3d7df32b8f87878eaec021fe805bba6f9cb65",
+		"index.js": "92dbe61c2662d4195a991f17010c1ffb55259ac93f0cb4fc1b700c58e28e30e7",
+		"module.json": "f140be6353f0ca08f200403e3f6467087f2b90c1a68422f060feebca32416dfd",
+		"network.js": "c532c00eee4d6b8d808b4e1174277afe1c9bae68ecf178415ba12225cff82159",
+		"settings-codec.js": "f5654e9cd991631d78ed9f4164eb9f5078cc6957470ae550d607a6f7d429e277",
 		"LICENSE": "9d0a2194290ac34989c5ae004336748b5888e69752419750ab869a646d265f74",
-		"README.en.md": "27dfb45505a82e1ea3bff43dcd0dda80d5e66f1cf0b6131820c2a683cb81102b",
-		"README.md": "d6a83772b16fababcf1e8b609bf0d6261dfa3b822d1de061b6dbb3a7145ad213",
-		"settings_migrator.js": "83649e9dbafebc7375a8c3287a705d709ee8ea7b5ddc8cf330cb3396d031b7ec",
-		"THIRD_PARTY_NOTICES.md": "5e9b52fb700d57c70188d52bf3b10db1f3097427344bc8c54cc0bc20839dfd9b"
+		"README.en.md": "03462eca8b40926e3ec26b91b416da56c36e565d445a604062ee2b2429ad605a",
+		"README.md": "cc094e6c722bac8ffd629d46920040662695dbe90705a4e35f7d95ab6c491b61",
+		"settings_migrator.js": "269764ec163a970ddcad023e3d9963db0bd8068dc186777c575dd5263bed68e1",
+		"THIRD_PARTY_NOTICES.md": "b1c26b04ba09000078b1fd35ae479adfa4b0b852059040d2ba1e4ed898e7adc2",
+		"client/S1UI_PartyAbnormalitySetting.gpk": "dfa75b765a144811ffa4ed6bc504d17b035e9401d019275cd79103ffc2a015f4",
+		"client/S1UI_PartyWindow.gpk": "66ff12fad9343dde2a180a009226e3992176a235593a27dd931d8d76adc8b7e4",
+		"party-resources.js": "c4d474705eef63131ccd7e74daedbf9d4c545d207798f77cb26d700da44a6022",
+		"client/S1UI_InteractionMenu.gpk": "44e0fa707c194fd6e196d4afc53a49c02d9bbe39c94cb2ef2eb7001e8c5979a9",
+		"party-inspect.js": "2231d053810f7f6b33e80aebd257b404c3dfbfb699b4b09ad7c5bdf789fd48c3"
 	},
 	"defs": {
 		"S_LOAD_CLIENT_USER_SETTING": 1,

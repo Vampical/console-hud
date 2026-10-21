@@ -27,3 +27,7 @@ MIT распространяется на код модуля, определе�
 созданные для Console HUD. Игровой GPK и исходные ресурсы TERA в эту лицензию
 не входят. Права на них остаются у соответствующих правообладателей;
 отдельное разрешение на распространение этих материалов проект не выдаёт.
+
+The party window and effect settings retain PC 100.02 scripts and artwork. Native atlas regions are embedded losslessly for portable Toolbox loading; class icon colors and native effect assets are unchanged. The new party layout and connectors are project additions.
+
+`client/S1UI_InteractionMenu.gpk` also contains original PC 100.02 menu scripts and artwork, excluded from MIT on the same terms above. The added party inspection action and its Toolbox bridge are project additions.
