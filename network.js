@@ -188,15 +188,15 @@ module.exports = class ConsoleHUDNetwork {
         if (this.pending) this.mod.clearTimeout(this.pending.timer);
         this.pending = null;
     }
-    request(mode, settings = this.settings) {
+    request(mode, settings = this.settings, controlsOnly = false) {
         this.session.nonce = this.session.nonce >= 2147483647 ? 1 : this.session.nonce + 1;
-        const nonce = this.session.nonce, data = codec.patchTheme(settings, mode, nonce, this.partyPreferences());
+        const nonce = this.session.nonce, data = (controlsOnly ? codec.themePacket : codec.patchTheme)(settings, mode, nonce, this.partyPreferences());
         this.clearPending(); this.lastRequest = { mode, nonce };
         this.pending = { mode, nonce, timer: this.mod.setTimeout(() => { this.pending = null; }, 3000) };
         return data;
     }
     sendTheme(mode) {
-        const data = this.request(mode);
+        const data = this.request(mode, this.settings, true);
         this.sendingTheme = true;
         try {
             if (this.mod.send('S_LOAD_CLIENT_' + this.scope + '_SETTING', 1, { data }) === false)

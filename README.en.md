@@ -4,7 +4,7 @@
 
 A TERA Toolbox mod that replaces the character HUD with a console-style layout: circular laurels, a class icon, HP, MP, gear score and class resource bars.
 
-**Version: 0.57. Supported client: TERA 100.02, x64.** Other client patches have not been verified.
+**Version: 0.58. Supported client: TERA 100.02, x64.** Other client patches have not been verified.
 
 ## Features
 
@@ -108,6 +108,8 @@ Column snapping only runs while dragging the selected member. It never moves oth
 Party MP is a thin 9-logical-pixel bar without numbers or a click handler; there is no separate party ST bar. Effect icons are 26 logical pixels with a 1px gap. Personal character resources and shields are preserved.
 
 The character HUD updates static elements when data changes. Energy flow and stack pulses reuse retained geometry; hidden windows pause animations, and `default` removes the custom frame handler after acknowledging the theme.
+
+Login theme restoration and style commands send only Console HUD keys. They do not replay saved UI scales, window positions, or other controllers.
 
 ## Settings
 

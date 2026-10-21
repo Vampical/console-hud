@@ -101,6 +101,24 @@ function mergeSettings(base, update) {
     });
     output.push(...byName.values()); return Buffer.concat(output);
 }
+function themePacket(data, mode, nonce, party) {
+    // A synthetic LOAD is a partial update, not a replay of cached client UI.
+    // Keep required packet/controller metadata but emit only our own controls.
+    const ui = uiBlock(patchTheme(data, mode, nonce, party));
+    const keys = new Set(['CHLS', 'CHLR', 'CHPH', 'CHBR']);
+    const decoded = Buffer.concat(fields(ui.decoded).filter(field => {
+        if (field.id !== 2 || field.wire !== 2) return false;
+        const key = find(fields(field.value), 1);
+        return key && key.wire === 2 && keys.has(text(key.value));
+    }).map(field => field.raw));
+    const encoded = ui.compressed ? zlib.deflateSync(decoded) : decoded;
+    const metadata = ui.header.filter(field => [1, 10, 20, 30, 40].includes(field.id));
+    const header = replace(metadata, new Map([[20, bytes(20, encoded)], [40, integer(40, decoded.length)]]));
+    return Buffer.concat([
+        ...ui.outer.filter(field => field.id !== 10).map(field => field.raw),
+        bytes(10, header)
+    ]);
+}
 function mergeUI(base, update) {
     const old = uiBlock(base), incoming = uiBlock(update), changes = fields(incoming.decoded), pending = new Map();
     const keyOf = field => {
@@ -119,4 +137,4 @@ function mergeUI(base, update) {
     const decoded = Buffer.concat(output), encoded = old.compressed ? zlib.deflateSync(decoded) : decoded;
     return bytes(10, replace(old.header, new Map([[20, bytes(20, encoded)], [40, integer(40, decoded.length)]])));
 }
-module.exports = { fields, bytes, integer, text, uiBlock, controlValues, patchTheme, mergeSettings };
+module.exports = { fields, bytes, integer, text, uiBlock, controlValues, patchTheme, themePacket, mergeSettings };
