@@ -4,7 +4,7 @@
 
 A TERA Toolbox mod that replaces the character HUD with a console-style layout: circular laurels, a class icon, HP, MP, gear score and class resource bars.
 
-**Version: 0.54. Supported client: TERA 100.02, x64.** Other client patches have not been verified.
+**Version: 0.57. Supported client: TERA 100.02, x64.** Other client patches have not been verified.
 
 ## Features
 
@@ -85,14 +85,14 @@ Custom party styles are 25% smaller than the initial game builds, with tighter e
 
 Custom party styles align the class icon and wreath center with the MP bar center.
 
-Custom party styles now include a separate ST bar below MP for warriors, lancers, archers, reapers, gunners, brawlers, ninjas, and valkyries. Fill comes from server party-resource updates. ST is a thin bar without a label or numbers; a zero maximum leaves it visible and empty. Effects below move down with the additional bar. Default retains the native 100.02 party without this extra ST bar.
 
 All 13 original class icons are centered from their visible bitmap bounds, separately in the party and character HUD. Colors are unchanged.
 
 
 `classic`, `console`, and `default` control both HUDs. Classic and console use party design 4 with the original class icon colors, names inside HP, a separate MP bar, and connectors behind the UI. Default restores the native 100.02 party window.
 
-Click a party HP or MP bar to switch that bar type between percentage and current/maximum values. Each preference applies to all party members and is saved separately in `config.json` (`partyHpPercent` and `partyMpPercent`, both `false` by default).
+
+Click a party member’s HP to switch between percentage and current/maximum values. The HP format is shared across party members and saved in `config.json`. Party MP has no numbers or click action.
 
 Effects default to one row beneath MP, starting at the rectangular part of the HP bar. Open the native party gear menu and its effect settings, enable **«Показывать эффекты справа»** (Show effects on the right), and press **OK** for three effects vertically with unlimited columns to the right. This saves `partyEffectsRight` (`false` by default). Native filters, group popups, timers, and tooltips are retained. The added checkbox is hidden in default style.
 
@@ -104,6 +104,10 @@ Right-click a party member and choose **«Осмотреть» (Inspect)** to op
 
 Column snapping only runs while dragging the selected member. It never moves other members or repositions the party on theme or HP/MP changes. The custom party frame callback is removed when idle. Connectors update on placement events; dice bounds update only while the widget is visible. Character animations render at most 30 times per second; unchanged fills and text are cached.
 
+
+Party MP is a thin 9-logical-pixel bar without numbers or a click handler; there is no separate party ST bar. Effect icons are 26 logical pixels with a 1px gap. Personal character resources and shields are preserved.
+
+The character HUD updates static elements when data changes. Energy flow and stack pulses reuse retained geometry; hidden windows pause animations, and `default` removes the custom frame handler after acknowledging the theme.
 
 ## Settings
 
@@ -152,4 +156,4 @@ Module code and documentation: [MIT](LICENSE), by Vampic.
 
 Game resources inside the GPK are excluded from MIT. See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) for scope and ownership notices. This is an unofficial TERA modification.
 
-Party resource updates contain only changed current/max values for affected members. A complete resource snapshot is sent on initial loading or UI restoration. Removing a member clears only that member’s resource.
+

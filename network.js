@@ -2,7 +2,6 @@
 const path = require('path');
 const codec = require('./settings-codec');
 const { version } = require('./module.json');
-const PartyResources = require('./party-resources');
 const PartyInspect = require('./party-inspect');
 
 // ACCOUNT UI data belongs to the running client, not its current character's
@@ -44,7 +43,6 @@ module.exports = class ConsoleHUDNetwork {
                     this.rememberSettings(scope);
                     if (mod.settings.enabled === false) return;
                     event.data = this.request(this.mode, incoming);
-                    if (this.partyResources) this.partyResources.resync();
                     return true;
                 } catch (error) {
                     // A controller packet without UI must not erase the
@@ -54,9 +52,7 @@ module.exports = class ConsoleHUDNetwork {
             });
             this.hookSettings('C_SAVE_CLIENT_' + scope + '_SETTING', event => {
                 this.received[scope].save++;
-                const cleaned = codec.stripPartyResources(event.data);
-                if (cleaned) event.data = cleaned;
-                if (scope === 'USER' && this.inLobby) return cleaned ? true : undefined;
+                if (scope === 'USER' && this.inLobby) return;
                 try {
                     this.capturePartyPreferences(event.data);
                     this.snapshots[scope] = codec.mergeSettings(this.snapshots[scope], event.data);
@@ -78,7 +74,7 @@ module.exports = class ConsoleHUDNetwork {
                         mod.log('HUD theme acknowledged by GFx: ' + this.styleName(request.mode));
                     }
                 } catch (error) { mod.error('HUD settings: ' + error.message); }
-                return cleaned ? true : undefined;
+
             });
         }
         this.commandHandler = (...args) => this.command(...args);
@@ -102,7 +98,6 @@ module.exports = class ConsoleHUDNetwork {
         mod.hook('S_SPAWN_ME', 'event', { order: 100000 }, () => {
             this.registerCommands(); this.scheduleRestore();
         });
-        this.partyResources = new PartyResources(this);
         this.partyInspect = new PartyInspect(this);
         mod.log('Console HUD network v' + version + ' ready: consolehud / chud; settings hooks ' + this.activeHooks.length + '/4.');
     }
@@ -116,14 +111,13 @@ module.exports = class ConsoleHUDNetwork {
     }
     partyPreferences() {
         return { CHPH: this.mod.settings.partyHpPercent === true ? 1 : 0,
-            CHPM: this.mod.settings.partyMpPercent === true ? 1 : 0,
             CHBR: this.mod.settings.partyEffectsRight === true ? 1 : 0 };
     }
     capturePartyPreferences(data) {
         let values;
         try { values = codec.controlValues(data); } catch (_) { return; }
         let changed = false;
-        for (const [key, setting] of [['CHPH', 'partyHpPercent'], ['CHPM', 'partyMpPercent'], ['CHBR', 'partyEffectsRight']]) {
+        for (const [key, setting] of [['CHPH', 'partyHpPercent'], ['CHBR', 'partyEffectsRight']]) {
             if (![0, 1].includes(values[key])) continue;
             const value = values[key] === 1;
             if (this.mod.settings[setting] !== value) { this.mod.settings[setting] = value; changed = true; }
@@ -208,7 +202,6 @@ module.exports = class ConsoleHUDNetwork {
             if (this.mod.send('S_LOAD_CLIENT_' + this.scope + '_SETTING', 1, { data }) === false)
                 throw Error('Клиент не получил пакет настроек');
         } finally { this.sendingTheme = false; }
-        if (this.partyResources) this.partyResources.schedule();
     }
     saveMode(mode) {
         this.mode = mode; this.mod.settings.laurelStyle = this.styleName(mode); this.mod.saveSettings();
@@ -216,7 +209,7 @@ module.exports = class ConsoleHUDNetwork {
     command(argument, key, value) {
         const arg = String(argument || 'status').toLowerCase();
         if (arg === '_party') {
-            const setting = { CHPH: 'partyHpPercent', CHPM: 'partyMpPercent' }[key];
+            const setting = { CHPH: 'partyHpPercent' }[key];
             if (setting && ['0', '1'].includes(value) && this.mod.settings[setting] !== (value === '1')) {
                 this.mod.settings[setting] = value === '1'; this.mod.saveSettings();
             }
@@ -253,7 +246,6 @@ module.exports = class ConsoleHUDNetwork {
     }
     destructor() {
         this.partyInspect.destructor();
-        this.partyResources.destructor();
         this.cancelRestore(); this.clearPending();
         for (const name of ['consolehud', 'chud']) this.mod.command.remove(name);
     }

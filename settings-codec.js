@@ -61,14 +61,14 @@ function controlValues(data) {
         const entry = fields(field.value), key = find(entry, 1), value = find(entry, 2);
         if (key && value && key.wire === 2 && value.wire === 2) {
             const name = text(key.value);
-            if (['CHLS', 'CHLR', 'CHLA', 'CHPH', 'CHPM', 'CHBR'].includes(name)) result[name] = Number(text(value.value));
+            if (['CHLS', 'CHLR', 'CHLA', 'CHPH', 'CHBR'].includes(name)) result[name] = Number(text(value.value));
         }
     }
     return result;
 }
 function patchTheme(data, mode, nonce, party) {
     const controls = [['CHLS', mode], ['CHLR', nonce]];
-    if (party) for (const key of ['CHPH', 'CHPM', 'CHBR']) {
+    if (party) for (const key of ['CHPH', 'CHBR']) {
         if (![0, 1].includes(party[key])) throw Error('Invalid party preference: ' + key);
         controls.push([key, party[key]]);
     }
@@ -120,33 +120,3 @@ function mergeUI(base, update) {
     return bytes(10, replace(old.header, new Map([[20, bytes(20, encoded)], [40, integer(40, decoded.length)]])));
 }
 module.exports = { fields, bytes, integer, text, uiBlock, controlValues, patchTheme, mergeSettings };
-
-// Resource values are transient local UI controls, never persistent settings.
-function isPartyResource(key) { return key === 'CHSTE' || /^CHST[CMD]_[0-9a-f]{4,160}_(?:[0-9]|1[0-2])$/.test(key); }
-function stripPartyResources(data) {
-    let ui; try { ui = uiBlock(data); } catch (_) { return null; }
-    const original = fields(ui.decoded), kept = original.filter(field => {
-        if (field.id !== 2 || field.wire !== 2) return true;
-        const key = find(fields(field.value), 1);
-        return !key || key.wire !== 2 || !isPartyResource(text(key.value));
-    });
-    if (kept.length === original.length) return null;
-    const decoded = Buffer.concat(kept.map(field => field.raw));
-    const encoded = ui.compressed ? zlib.deflateSync(decoded) : decoded;
-    const block = replace(ui.header, new Map([[20, bytes(20, encoded)], [40, integer(40, decoded.length)]]));
-    return Buffer.concat(ui.outer.map(field => field === ui.block ? bytes(10, block) : field.raw));
-}
-function partyResourcePacket(base, controls) {
-    const ui = uiBlock(base), entries = [];
-    for (const [key, value] of controls) {
-        if (!isPartyResource(key) || !Number.isInteger(value) || value < 0 || value > 2147483647) throw Error('Invalid party resource control');
-        entries.push(bytes(2, Buffer.concat([bytes(1, Buffer.from(key, 'utf16le')), bytes(2, Buffer.from(String(value), 'utf16le'))])));
-    }
-    const decoded = Buffer.concat(entries), encoded = ui.compressed ? zlib.deflateSync(decoded) : decoded;
-    // Exclude every window-position record and unrelated settings controller.
-    // The native customized-value loader merges just these named values.
-    const metadata = ui.outer.filter(field => field.id !== 10).map(field => field.raw);
-    return Buffer.concat([...metadata, bytes(10, replace(ui.header, new Map([[20, bytes(20, encoded)], [40, integer(40, decoded.length)]])))]);
-}
-module.exports.partyResourcePacket = partyResourcePacket;
-module.exports.stripPartyResources = stripPartyResources;

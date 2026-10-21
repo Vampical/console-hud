@@ -20,7 +20,6 @@ module.exports = function migrate(fromVersion, toVersion, settings) {
         laurelStyle: settings?.laurelStyle === 'default' ? 'default' :
             settings?.laurelStyle === 'console' || settings?.laurelStyle === 'round' ? 'console' : 'classic',
         partyHpPercent: settings?.partyHpPercent === true,
-        partyMpPercent: settings?.partyMpPercent === true,
         partyEffectsRight: settings?.partyEffectsRight === true
     };
 };
