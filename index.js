@@ -5,9 +5,9 @@ const crypto = require('crypto');
 const { version } = require('./module.json');
 const resources = {
     "client/S1UI_InteractionMenu.gpk": "44e0fa707c194fd6e196d4afc53a49c02d9bbe39c94cb2ef2eb7001e8c5979a9",
-    "client/S1UI_CharacterWindow.gpk": "8afd5520d92d8ed0bb2e28b6d0514404d4c1e3fb2a72f1698c284ca9a7c486da",
-    "client/S1UI_PartyAbnormalitySetting.gpk": "dfa75b765a144811ffa4ed6bc504d17b035e9401d019275cd79103ffc2a015f4",
-    "client/S1UI_PartyWindow.gpk": "7469cb87e6848b5ff514a8545bab605f5a80919ed82bb2f5a2ad513afb30be01"
+    "client/S1UI_CharacterWindow.gpk": "e87f2bfe92d5be78b125e39fd04fa09854234d25835168546082156fa0445d45",
+    "client/S1UI_PartyAbnormalitySetting.gpk": "9f76794c0debf00428660e5796ca173817750aa20fbdd173c83243eac6a905cf",
+    "client/S1UI_PartyWindow.gpk": "2ffa694af8497141d4513d5d3217d0721a795f52b6fa8585113c1214f6fdd1dc"
 };
 
 exports.ClientMod = class ConsoleHUDClient {

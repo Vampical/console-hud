@@ -4,9 +4,13 @@
 
 A TERA Toolbox mod that replaces the character HUD with a console-style layout: circular laurels, a class icon, HP, MP, gear score and class resource bars.
 
-**Version: 0.58. Supported client: TERA 100.02, x64.** Other client patches have not been verified.
+**Version: 0.61. Supported client: TERA 100.02, x64.** Other client patches have not been verified.
 
 ## Features
+
+Removing a window releases its subscriptions, mouse handlers, effect timers, and deferred animations. Style switching reuses the existing handlers.
+
+In `classic` and `console`, hidden native character gauges do not paint or start animations. HP, MP, and shield calculations are retained. Selecting `default` restores native gauges and class resources with current values.
 
 - Compact and expanded character HUD layouts.
 - Party design 4 with names inside HP, a separate MP bar, round laurels, individual dragging, and connectors behind the UI.
@@ -78,6 +82,8 @@ Enter commands in the **Toolbox channel**. `consolehud` is an alias for `chud`, 
 The only addition to the native `default` layout is clicking the central panel to switch between expanded and vertical views and save the selection. Dragging the panel does not toggle its layout.
 
 ## Party UI
+
+In custom styles, HP and MP updates repaint only their corresponding gauge, without laying out the entire member again or drawing hidden native gauges. Returning to `default` synchronizes the native gauges with current values. Effect processing, timers, and removal retain the native implementation.
 
 Party spacing and connectors account for the in-game UI scale. Original colored class icon textures are embedded in the party package.
 
