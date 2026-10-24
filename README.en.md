@@ -4,13 +4,18 @@
 
 A TERA Toolbox mod that replaces the character HUD with a console-style layout: circular laurels, a class icon, HP, MP, gear score and class resource bars.
 
-**Version: 0.63. Supported client: TERA 100.02, x64.** Other client patches have not been verified.
+**Version: 0.64. Supported client: TERA 100.02, x64.** Other client patches have not been verified.
 
 
 The leader crown in the custom character HUD follows the player name.
 
 
 Character HP and MP number formats use the native client UI preferences and are restored on login across default, classic and console. No additional config.json fields are used.
+
+
+Offline party members show “Не в сети” in the HP value field of classic and console. Names stay visible and the selected HP format returns on reconnection.
+
+Party effects below the bars remain anchored to MP while dice/results animate. Right-side effects still clear the combat and dice fields.
 
 ## Features
 

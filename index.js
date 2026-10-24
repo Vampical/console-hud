@@ -7,7 +7,7 @@ const resources = {
     "client/S1UI_InteractionMenu.gpk": "44e0fa707c194fd6e196d4afc53a49c02d9bbe39c94cb2ef2eb7001e8c5979a9",
     "client/S1UI_CharacterWindow.gpk": "f28bffb1bda42e0a8aefcc0c2cff66ae32cc04a3124a03fb1042ceeea781b205",
     "client/S1UI_PartyAbnormalitySetting.gpk": "9f76794c0debf00428660e5796ca173817750aa20fbdd173c83243eac6a905cf",
-    "client/S1UI_PartyWindow.gpk": "2ffa694af8497141d4513d5d3217d0721a795f52b6fa8585113c1214f6fdd1dc"
+    "client/S1UI_PartyWindow.gpk": "c831f259c341479d3d036bf09b1eb92ce41e4269292899154d6cb50d65b9926e"
 };
 
 exports.ClientMod = class ConsoleHUDClient {
