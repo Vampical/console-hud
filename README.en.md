@@ -4,7 +4,7 @@
 
 A TERA Toolbox mod that replaces the character HUD with a console-style layout: circular laurels, a class icon, HP, MP, gear score and class resource bars.
 
-**Version: 0.66. Supported client: TERA 100.02, x64.** Other client patches have not been verified.
+**Version: 0.67. Supported client: TERA 100.02, x64.** Other client patches have not been verified.
 
 
 The leader crown in the custom character HUD follows the player name.
@@ -22,6 +22,9 @@ A reconnecting party member no longer freezes its provisional position before na
 
 
 MP format persistence uses the native CWMB key directly, including when an older shared UI key class loads first. The preference stays in native client settings, with no extra config.json fields.
+
+
+All 13 class glyphs fill more of the player and party wreath interiors while preserving their colors, proportions and centers. Classic and console party HP rows show the native character level before the name.
 
 ## Features
 
